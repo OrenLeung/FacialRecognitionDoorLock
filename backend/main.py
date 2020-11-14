@@ -20,8 +20,8 @@ def load_references_images():
     michael_image = face_recognition.load_image_file("./reference_image/michael0.jpg")
     michael_face_encoding = face_recognition.face_encodings(michael_image)[0]
 
-    sam_image = face_recognition.load_image_file("./reference_image/michael0.jpg")
-    sam_face_encoding = face_recognition.face_encodings(michael_image)[0]
+    sam_image = face_recognition.load_image_file("./reference_image/sam0.jpg")
+    sam_face_encoding = face_recognition.face_encodings(sam_image)[0]
 
     # Create arrays of known face encodings and their names
     known_face_encodings = [
