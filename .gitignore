@@ -2,3 +2,4 @@
 __pycache__/
 creds.json
 .env
+test_images/
