@@ -1,15 +1,19 @@
-FROM python:3.8-alpine
+FROM jjanzic/docker-python3-opencv
 
 COPY requirements.txt /app/
 
-RUN pip install opencv-python
+# RUN pip install opencv-python
 
-RUN apt-get build-dep python-imaging
-RUN apt-get install libjpeg62 libjpeg62-dev
-RUN pip install PIL
+# RUN apt-get build-dep 
+# RUN apt-get install libjpeg
+# RUN pip install PIL
 
 RUN pip install face_recognition
 
 RUN pip install -r /app/requirements.txt
 
-COPY . /app
+COPY . .
+
+COPY ./creds.json /app/creds.json
+
+CMD python main.py

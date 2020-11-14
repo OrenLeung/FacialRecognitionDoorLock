@@ -1,7 +1,8 @@
 fastapi
 python-multipart
 aiofiles
-opencv-python
-face_recognition
+# opencv-python
+# face_recognition
 numpy
 uvicorn
+gcloud

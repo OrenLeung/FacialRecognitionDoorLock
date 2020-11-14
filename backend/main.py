@@ -47,6 +47,26 @@ app: FastAPI = FastAPI()
 def ping():
     return json.dumps({"PONG": True})
 
+from gcloud import storage
+# file.
+storage_client = storage.Client.from_service_account_json(
+    '/app/creds.json',"compiler-monkeys")
+
+def upload_to_bucket(blob_name, path_to_file, bucket_name):
+    """ Upload data to a bucket"""
+
+    # Explicitly use service account credentials by specifying the private key
+
+    #print(buckets = list(storage_client.list_buckets())
+
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.upload_from_filename(path_to_file)
+
+    #returns a public url
+    return blob.public_url
+
+
 async def predict( image: UploadFile = File(...)) -> str:
     contents = await image.read()
     nparr = np.fromstring(contents, np.uint8)
@@ -66,13 +86,13 @@ async def predict( image: UploadFile = File(...)) -> str:
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
 
-            return name
+            return upload_to_bucket(FOUT.name,FOUT.name,"face-rec123")
 
     return ""
 
 
 @app.post("/api/identifyguest")
-async def identifyGuest( guest_photo: UploadFile = File(...)) -> bool:
+async def identifyGuest( guest_photo: UploadFile = File(...)) -> str:
     extension = guest_photo.filename.split(".")[-1] in ("jpg","jpeg")
 
     if not extension:
@@ -80,12 +100,14 @@ async def identifyGuest( guest_photo: UploadFile = File(...)) -> bool:
     
     person_name = await predict(guest_photo)
 
-    if person_name != "" and person_name != "Michael":
-        return True
-    else:
-        return False
+    return person_name
+
+    # if person_name != "" and person_name != "Michael":
+    #     return True
+    # else:
+    #     return False
 
 
+# if __name__ == "__main__":
+uvicorn.run(app, host="0.0.0.0", port=8080)
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
