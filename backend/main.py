@@ -2,7 +2,7 @@ import json
 import os
 import tempfile
 import uvicorn
-
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, File, UploadFile, HTTPException
 import face_recognition
 import cv2
@@ -42,6 +42,14 @@ def load_references_images():
 known_face_encodings,known_face_names = load_references_images()
 
 app: FastAPI = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/api/ping")
 def ping():
