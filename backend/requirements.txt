@@ -6,3 +6,6 @@ aiofiles
 numpy
 uvicorn
 gcloud
+dnspython
+pymongo[tls]
+python-dotenv
