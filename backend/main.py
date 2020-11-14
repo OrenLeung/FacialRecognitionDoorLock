@@ -52,6 +52,14 @@ from gcloud import storage
 storage_client = storage.Client.from_service_account_json(
     '/app/creds.json',"compiler-monkeys")
 
+import pymongo
+from dotenv import load_dotenv
+load_dotenv()
+
+
+db = pymongo.MongoClient(os.getenv("MONGO_URL")).face
+collection = db.face
+
 def upload_to_bucket(blob_name, path_to_file, bucket_name):
     """ Upload data to a bucket"""
 
@@ -66,6 +74,8 @@ def upload_to_bucket(blob_name, path_to_file, bucket_name):
     #returns a public url
     return blob.public_url
 
+def upload_database(name:str, url:str):
+    collection.insert_one({"name":name, "url": url})
 
 async def predict( image: UploadFile = File(...)) -> str:
     contents = await image.read()
@@ -86,10 +96,12 @@ async def predict( image: UploadFile = File(...)) -> str:
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
 
-            return upload_to_bucket(FOUT.name,FOUT.name,"face-rec123")
+            link = upload_to_bucket(FOUT.name.split("/")[-1],FOUT.name,"face-rec123")
+            upload_database(name,link)
+
+            return name
 
     return ""
-
 
 @app.post("/api/identifyguest")
 async def identifyGuest( guest_photo: UploadFile = File(...)) -> str:
@@ -107,6 +119,17 @@ async def identifyGuest( guest_photo: UploadFile = File(...)) -> str:
     # else:
     #     return False
 
+
+@app.get("/api/logs")
+async def logs():
+    logsArray = []
+    for document in list(collection.find({})):
+        try:
+            docJson = {"name":document["name"], "url":document["url"]}
+            logsArray.append(docJson)
+        except:
+            continue
+    return logsArray
 
 # if __name__ == "__main__":
 uvicorn.run(app, host="0.0.0.0", port=8080)
