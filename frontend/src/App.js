@@ -25,7 +25,7 @@ class App extends Component {
           {this.state.logsArray.map((log, i) => (
             <div key={i}>
               <p>{log["name"]}</p>
-              <img src={log["url"]} style={{ "maxWidth": "300px", "maxHeight": "300px", "margin": "10px", "borderRadius": "25px" }} />
+              <img src={log["url"]} alt={"photo of " + log["name"]} style={{ "maxWidth": "300px", "maxHeight": "300px", "margin": "10px", "borderRadius": "25px" }} />
             </div>
           ))}
         </div>
